@@ -1,0 +1,51 @@
+// laba6higher.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+//
+
+#include <sys/types.h>
+#include <fcntl.h> 
+#include <iostream>
+#include <string>
+#pragma warning(disable : 4996)
+using namespace std;
+
+int main()
+{
+	setlocale(0, "ru");
+    const int N = 5;
+    int array[N][N];
+	char path[] = "numbers.bin";
+	cout << "ДО" << endl;
+	for (size_t i = 0; i < N; i++)
+	{
+		for (size_t j = 0; j < N; j++)
+		{
+		   cout<<"\t"<<(array[i][j] = rand() % 9 + 1) << " ";
+		}
+		cout << endl;
+	}
+	FILE* file_1, * file_2;
+	file_1 = fopen(path, "wb");
+	fwrite(array, sizeof(array), 1, file_1);
+	fclose(file_1);
+	int array2[N][N];
+	file_2 = fopen(path, "rb");
+	fread(array2, sizeof(array), 1, file_2);
+	fclose(file_2);
+	cout << endl << "После" << endl;
+	for (size_t i = 0; i < N; i++)
+	{
+		for (size_t j = 0; j < N; j++)
+		{
+			cout<<"\t"<<(array2[i][j] = array2[i][j] * 2)  <<" ";
+		}
+		cout << endl;
+	}
+	file_1 = fopen(path, "wb");
+	fwrite(array2, sizeof(array2), 1, file_1);
+	fclose(file_1);
+
+
+	
+}
+
+
