@@ -1,0 +1,85 @@
+// laba_6_3.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+//
+
+#include <sys/types.h>
+#include <fcntl.h> 
+#include <iostream>
+#include <string>
+#pragma warning(disable : 4996)
+using namespace std;
+
+struct internet
+{
+    string surname_initials;
+    int cost;
+    int number_months_payment_all;
+    int number_months_payment_forward;
+    void readinfo();
+    void info();
+};
+
+
+void internet::info()
+{
+   
+    cout << "Фамилия и инициалы: " << surname_initials << endl;
+    cout << "Стоимость интернет услуг: " << cost << endl;
+    cout << "Количество месяцев оплаты за услуги интернет сети: " << number_months_payment_all << endl;
+    cout << "Количество месяцев оплаты вперёд за услуги интернет сети: " << number_months_payment_forward << endl;
+}
+
+void internet::readinfo()
+{
+
+    cout << "Введите Фамилию и инициалы клиента: ";
+    cin.ignore(std::cin.rdbuf()->in_avail());
+    getline(cin , surname_initials, '\n');
+    cout << "Стоимость оплаты интернет услуг за месяц: ";
+    cin.ignore(std::cin.rdbuf()->in_avail());
+    cin >> cost;
+    cout << "Введите количество месяцев оплаты за услуги интернет сети: ";
+    cin.ignore(std::cin.rdbuf()->in_avail());
+    cin >> number_months_payment_all;
+    cout << "Введите количество месяцев оплаты вперёд за услуги интернет сети: ";
+    cin.ignore(std::cin.rdbuf()->in_avail());
+    cin >> number_months_payment_forward;
+
+}
+
+int main()
+{
+    setlocale(0, "ru");
+    int quantity;
+    cout << "Введите количество клиентов интернет сети: "<<endl;
+    cin >> quantity;
+    internet* client = new internet[quantity];
+    for (size_t i = 0; i < quantity; i++)
+    {
+        client[i].readinfo();
+        cout << endl;
+    }
+    char path[] = "internet.bin";
+    FILE* file_1, *file_2;
+    file_1 = fopen(path, "wb");
+    fwrite(client, sizeof(internet), quantity, file_1);
+    fclose(file_1);
+    cout << endl << "Считывание информации с файла:" << endl << endl;
+    internet* clientinfo = new internet[quantity];
+    file_2 = fopen(path, "rb");
+    fread(clientinfo, sizeof(internet), quantity, file_2);
+    fclose(file_2);
+    for (size_t i = 0; i < quantity; i++)
+    {
+        if (clientinfo[i].number_months_payment_forward > 3)
+            clientinfo[i].cost = clientinfo[i].cost - (clientinfo[i].cost * 0.07);
+        clientinfo[i].info();
+        cout << endl;
+       
+    }
+    file_1 = fopen(path, "wb");
+    fwrite(clientinfo, sizeof(internet), quantity, file_1);
+    fclose(file_1);
+
+}
+
+
