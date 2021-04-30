@@ -1,0 +1,116 @@
+// Laba6binar.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+//
+
+#include <sys/types.h>
+#include <fcntl.h> 
+#include <iostream>
+#include <string>
+#pragma warning(disable : 4996)
+using namespace std;
+
+struct factory
+{
+    char surname[255];
+    int age;
+    string education;
+    char position[255];
+    string sex;
+    void readinfo();
+    void info();
+};
+
+
+void factory::info()
+{
+    cout << "Фамилия: "<<surname<<endl;
+    cout << "Возраст: "<<age<<endl;
+    cout << "Образование: "<<education<<endl;
+    cout << "Положение: "<<position<<endl;
+    cout << "Пол: "<<sex<<endl;
+}
+
+void factory::readinfo()
+{
+    string sextrue[] = { "Woman","Man" };
+    string educationtrue[] = { "Average","Higher" };
+    cout << "Введите Фамилию сотрудника: ";
+    cin.ignore(std::cin.rdbuf()->in_avail());
+    cin.getline(surname, sizeof(surname));
+
+    while (true)
+    {
+        cout << "Введите его/eё возраст: ";
+        cin.ignore(std::cin.rdbuf()->in_avail());
+        cin >> age;
+        if (age > 25 && age < 100)
+            break;
+        else
+        {
+            cout << "Мертвые или сотрудники младше 25 у нас не работают, может вы ошиблись?" << endl;
+        }
+    }
+    getchar();
+    while (true)
+    {
+        cout << "Образование: ";
+        getline(cin, education, '\n');
+        if (education == educationtrue[0] || education == educationtrue[1])
+            break;
+        else
+            cout << "Некорректные данные : проверьте регистр или правильность ввода"<<endl;
+    }
+
+    cout << "Положение: ";
+    cin.ignore(std::cin.rdbuf()->in_avail());
+    cin.getline(position, sizeof(position));
+    while (true)
+    {
+        cout << "Пол: ";
+        getline(cin, sex, '\n');
+        if (sex == sextrue[0] || sex == sextrue[1])
+            break;
+        else
+            cout << "Некорректные данные : проверьте регистр или правильность ввода" << endl;
+    }
+    
+
+}
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+    cout << "Введите количество сотрудников: ";
+    int quantity;
+    cin >> quantity;
+    factory* employee = new factory[quantity];
+    for (size_t i = 0; i < quantity; i++)
+    {
+        employee[i].readinfo();
+        cout << endl;
+    }
+    char path[] = "Employees.bin";
+    
+    FILE* file_1, *file_2;
+    file_1 = fopen(path, "wb");
+    fwrite(employee, sizeof(factory), quantity, file_1);
+    fclose(file_1);
+    cout << endl << "Считывание информации с файла:"<<endl<<endl;
+    factory* employeeinfo = new factory[quantity];
+    file_2 = fopen(path, "rb");
+    fread(employeeinfo, sizeof(factory), quantity, file_2);
+    fclose(file_2);
+    cout << "Этим не молодым людям пора на пенсию)" << endl<<endl;
+    for (size_t i = 0; i < quantity; i++)
+    {
+        if ((employeeinfo[i].sex[0] == 'W') && (employeeinfo[i].education[0] == 'A') && (employeeinfo[i].age > 50))
+        {
+            employeeinfo[i].info();
+            cout << endl;
+        }
+    }
+
+
+
+}
+
+
